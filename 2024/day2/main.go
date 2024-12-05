@@ -27,13 +27,17 @@ func main() {
 		log.Fatal(err)
 	}
 	numSafe := 0
+	numSafeWithOneRemoved := 0
 	for _, r := range reports {
-		isSafe := isReportSafe(r)
-		if isSafe {
+		if isReportSafe(r) {
 			numSafe++
 		}
+		if isReportSafeWithOneRemoved(r) {
+			numSafeWithOneRemoved++
+		}
 	}
-	fmt.Printf("Number of safe reports: %d\n", numSafe)
+	fmt.Printf("Part 1 - Number of safe reports: %d\n", numSafe)
+	fmt.Printf("Part 2 - Number of safe reports: %d\n", numSafeWithOneRemoved)
 }
 
 func parseReportsFromPath(filePath string) ([]report, error) {
@@ -87,6 +91,26 @@ func isReportSafe(r report) bool {
 		prevState = currentState
 	}
 	return true
+}
+
+func isReportSafeWithOneRemoved(r report) bool {
+	if len(r.levels) == 0 {
+		return false
+	}
+	if isReportSafe(r) {
+		return true
+	}
+	for i := 0; i < len(r.levels); i++ {
+		// Get the levels excluding the current index, but with copy
+		copied := make([]int, len(r.levels))
+		copy(copied, r.levels)
+		levelsWithoutIdx := append(copied[:i], copied[i+1:]...)
+		newReport := report{levels: levelsWithoutIdx}
+		if isReportSafe(newReport) {
+			return true
+		}
+	}
+	return false
 }
 
 func absDiff(a, b int) int {

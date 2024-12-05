@@ -95,3 +95,56 @@ func TestIsReportSafe_Example_ShouldMatchExpected(t *testing.T) {
 		})
 	}
 }
+
+func TestIsReportSafeWithOneRemoved_Example_ShouldMatchExpected(t *testing.T) {
+	testCases := []struct {
+		testReport report
+		isSafe     bool
+	}{
+		{
+			testReport: report{
+				levels: []int{7, 6, 4, 2, 1},
+			},
+			isSafe: true,
+		},
+		{
+			testReport: report{
+				levels: []int{1, 2, 7, 8, 9},
+			},
+			isSafe: false,
+		},
+		{
+			testReport: report{
+				levels: []int{9, 7, 6, 2, 1},
+			},
+			isSafe: false,
+		},
+		{
+			testReport: report{
+				levels: []int{1, 3, 2, 4, 5},
+			},
+			isSafe: true,
+		},
+		{
+			testReport: report{
+				levels: []int{8, 6, 4, 4, 1},
+			},
+			isSafe: true,
+		},
+		{
+			testReport: report{
+				levels: []int{1, 3, 6, 7, 9},
+			},
+			isSafe: true,
+		},
+	}
+	for idx, tt := range testCases {
+		t.Run(strconv.Itoa(idx), func(t *testing.T) {
+			safe := isReportSafeWithOneRemoved(tt.testReport)
+			if safe != tt.isSafe {
+				t.Fatalf(`expected report: "%v" safe to be: "%t", got: "%t"`,
+					tt.testReport, tt.isSafe, safe)
+			}
+		})
+	}
+}
